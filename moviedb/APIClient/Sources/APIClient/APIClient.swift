@@ -27,7 +27,7 @@ extension APIClient {
   public func sendURLSessionRequest<T: APIRequest>(for resource: T) -> AnyPublisher<T.Response, APIError> {
 
     guard let request = resource.buildRequest(withBaseUrl: URL(string: self.baseUrl)) else {
-      print("Bad url")
+      print("Error: Bad url")
       return Fail(error: APIError.client).eraseToAnyPublisher()
     }
     print("URL: \(request.url?.absoluteString ?? "")")
