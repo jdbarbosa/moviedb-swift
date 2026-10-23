@@ -16,9 +16,9 @@ public protocol MovieDetailProvider {
 
 public struct MovieDetailProviderImpl: MovieDetailProvider {
 
-  private let locator: Locator
+  private let locator: any DependencyLocator
 
-  public init(locator: Locator) {
+  public init(locator: any DependencyLocator) {
     self.locator = locator
   }
 

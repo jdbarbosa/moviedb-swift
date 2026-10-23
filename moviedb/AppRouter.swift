@@ -13,6 +13,7 @@ import MovieDetail
 
 /// Class that will hold the main window, and from which the SceneRouters will be built from.
 /// A new transition will be performed on top of the `currentViewController`provided by this class
+@MainActor
 final class AppRouter {
 
     private let window: UIWindow
@@ -50,6 +51,11 @@ final class AppRouter {
     MovieDetailModule.registerServices(in: locator)
     MovieListModule.registerServices(in: locator)
 
+      locator.verify(allOf:
+        APIClientModule.requiredKinds
+          + MovieDetailModule.requiredKinds
+          + MovieListModule.requiredKinds
+      )
     return locator
   }
 }
