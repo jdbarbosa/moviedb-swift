@@ -2,14 +2,25 @@
 
 import Locator
 
-public enum MovieDetailModule {}
+public enum MovieDetailModule {
+    /// Kinds this module resolves from the locator.
+    public static let requiredKinds: [AnyLocatorKind] = [.apiClient, .movieDetailProvider]
+}
 
 extension Locator.Kind {
-  public static var movieDetailProvider: Locator.Kind<MovieDetailProvider> { Locator.Kind("MovieDetailProvider") }
+    public static var movieDetailProvider: Locator.Kind<MovieDetailProvider> { Locator.Kind("MovieDetailProvider") }
 }
+
+extension AnyLocatorKind {
+  public static let movieDetailProvider = Locator.Kind<any MovieDetailProvider>.movieDetailProvider.erased
+}
+
 public extension MovieDetailModule {
-  static func registerServices(in locator: Locator) {
-    let movieDetailProvider = MovieDetailProviderImpl(locator: locator)
-    locator.register(.movieDetailProvider, movieDetailProvider)
-  }
+    
+    @MainActor
+    static func registerServices(in locator: any DependencyLocator) {
+        locator.register(.movieDetailProvider) { locator in
+            MovieDetailProviderImpl(locator: locator)
+        }
+    }
 }

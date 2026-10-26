@@ -9,7 +9,7 @@ import Protocols
 import SwiftUI
 
 @MainActor
-final class MovieListViewController: UIViewController, ViewModelBindable {
+final class MovieListViewController: UIViewController, ViewModelBindable, UISearchResultsUpdating {
 
   func bind(viewModel: MovieListViewModel) {
     self.bindOnMain(viewModel: viewModel)
@@ -46,12 +46,26 @@ final class MovieListViewController: UIViewController, ViewModelBindable {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .blue
+		title = "Movies"
+		view.backgroundColor = .systemBackground
+		navigationItem.largeTitleDisplayMode = .always
+    
+		let searchController = UISearchController(searchResultsController: nil)
+		searchController.searchResultsUpdater = self
+		searchController.obscuresBackgroundDuringPresentation = false
+		searchController.searchBar.placeholder = "Search movies"
+		navigationItem.searchController = searchController
+		navigationItem.hidesSearchBarWhenScrolling = false
+		definesPresentationContext = true
   }
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     viewModel?.fetchMovies(page: 1)
   }
+    
+	func updateSearchResults(for searchController: UISearchController) {
+		viewModel?.didChangeQuery(query: searchController.searchBar.text ?? "")
+	}
 }
 

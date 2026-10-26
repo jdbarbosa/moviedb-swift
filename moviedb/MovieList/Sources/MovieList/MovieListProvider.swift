@@ -10,28 +10,26 @@ import APIClient
 import UIKit
 
 public protocol MovieListProvider {
-
-  @MainActor func movieListViewController() -> UIViewController?
+    
+    @MainActor func movieListViewController() -> UIViewController?
 }
 
 public struct MovieListProviderImpl: MovieListProvider {
-
-  private weak var locator: Locator?
-  private let factory: MovieListFactory
-
-  public init(locator: Locator) {
-    self.locator = locator
-    self.factory = MovieListFactoryImpl(
-      movieDetailProvider: locator.resolve(.movieDetailProvider)
-    )
-  }
-
-  @MainActor public func movieListViewController() -> UIViewController? {
-    guard let locator = locator else {
-      fatalError("Locator is not set")
+    
+    private let locator: any DependencyLocator
+    private let factory: MovieListFactory
+    
+    @MainActor
+    public init(locator: any DependencyLocator) {
+        self.locator = locator
+        self.factory = MovieListFactoryImpl(
+            movieDetailProvider: locator.resolve(.movieDetailProvider)
+        )
     }
-    return factory.makeMovieListViewController(
-      apiClient: locator.resolve(.apiClient)
-    )
-  }
+    
+    @MainActor public func movieListViewController() -> UIViewController? {
+        factory.makeMovieListViewController(
+            apiClient: locator.resolve(.apiClient)
+        )
+    }
 }
